@@ -1,2 +1,3 @@
-DESCRIBE MovieGenre;
+USE se3309; 
 
+DESCRIBE MovieCastMember;

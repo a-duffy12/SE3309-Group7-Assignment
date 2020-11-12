@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS MovieCastMember
 	title VARCHAR(50) NOT NULL,
     releaseDate DATE NOT NULL,
     director VARCHAR(50) NOT NULL,
-    PRIMARY KEY (castName),
+    PRIMARY KEY (castName, title, releaseDate, director),
     FOREIGN KEY (title, releaseDate, director) REFERENCES Movie (title, releaseDate, director) );
     
 CREATE TABLE IF NOT EXISTS WatchListEntry
