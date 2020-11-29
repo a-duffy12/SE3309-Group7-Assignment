@@ -1,7 +1,7 @@
 INSERT INTO MovieListUser (username, password, firstName, lastName, dateOfBirth, emailAddress)
 VALUES ("greatly", "bestpass!!", "John", "Smith", "2000-01-01", "greatly@gmail.com");
 
-INSERT INTO Moive
+INSERT INTO Movie
 VALUES ("Interstellar", "2014-11-07", "Christopher Nolan", NULL, 8.6);
 
 INSERT INTO Review

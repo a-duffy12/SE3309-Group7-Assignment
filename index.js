@@ -44,7 +44,7 @@ router.get("/movies", (req, res) => {
     
     if (est)
     {
-        con.query('SELECT franchise, MIN(YEAR(releaseDate)) AS firstInstallment, MAX(YEAR(releaseDate)) AS lastInstallment FROM Movie WHERE franchise != " " OR franchise != NULL GROUP BY franchise ', (error, rows, fields) => {
+        con.query("SELECT * FROM Movie", (error, rows, fields) => {
             if (error) throw error;
             res.send(rows);
         });
@@ -53,7 +53,95 @@ router.get("/movies", (req, res) => {
     {
         res.status(404).send("No database connection established!");
     }
+});
+
+// register a new account
+router.post("/users/:email", (req, res) => {
+    
+    if (est) // if connected to a database
+    {
+        console.log("here 1");
+        if (sanitizeEmail(req.params.email) && sanitizePass(req.body)) // sanitize input
+        {
+            console.log("here 2");
+            con.query("SELECT * FROM MovieListUser", (error, rows, fields) => { // get all users
+                if (error) throw error;
+                
+                const index = rows.findIndex(u => u.emailAddress == req.params.email); // check for index of the specified user
+
+                if (index >= 0) // user exists
+                {
+                    res.status(400).send("User already exists!");
+                }
+                else if (index < 0) // user does not exist
+                {
+                    console.log("here 3");
+                    con.query(`INSERT INTO MovieListUser (username, password, firstName, lastName, dateOfBirth, emailAddress, likeCount) VALUES ("${req.body.username}", "${req.body.password}", "${req.body.firstName}", "${req.body.lastName}", "${req.body.dateOfBirth}", "${req.params.email}", 0);`, (err, result) => { // insert new user account
+                        if (err) throw err;
+
+                        res.send(`Created user`);
+                    })
+                } 
+            });
+        }
+        else
+        {
+            res.status(400).send("Invalid input!");
+        }
+    }
+    else 
+    {
+        res.status(404).send("No database connection established!");
+    }
 })
+
+// log in to account
+router.get("/users/:email", (req, res) => {
+    
+    if (est) // if connected to a database
+    {
+        if (sanitizeEmail(req.params.email) && sanitizePass(req.body)) // sanitize input
+        {
+            con.query("SELECT * FROM MovieListUser", (error, rows, fields) => { // get all users
+                if (error) throw error;
+                
+                const index = rows.findIndex(u => u.emailAddress == req.params.email); // check for index of the specified user
+
+                if (index >= 0) // user exists
+                {
+                    if (req.body.password == rows[index].password) // passwords match
+                    {
+                        res.send(true);
+                    }
+                    else // passwords do not match
+                    {
+                        res.status(400).send("Invalid password!");
+                    }
+                }
+                else if (index < 0) // user does not exist
+                {
+                    res.status(400).send("User does not exist!");
+                } 
+            });
+        }
+    }
+    else 
+    {
+        res.status(404).send("No database connection established!");
+    }
+})
+
+// change account attributes
+
+// create a review entry
+
+// get all movies directed by a specific director
+
+// see average rating of all movies released in a particular year
+
+// send and respond to a friend request
+
+// 
 
 // terminate a connection to the database
 router.get("/disconnect", (req, res) => {
