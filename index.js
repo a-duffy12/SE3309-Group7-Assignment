@@ -1,5 +1,6 @@
 const express = require("express"); // get express module
 const mysql = require("mysql"); // get mysql module
+const cors = require("cors"); // get cors module
 
 const con = mysql.createConnection({
     host: "localhost",
@@ -13,31 +14,34 @@ var est = false; // track if server is connected to the database
 const app = express(); // create app constant
 const router = express.Router(); // create rotuer
 
+const corsOptions = {  // options for cors
+    origin: "http://localhost:4200",
+    optionsSuccessStatus: 200
+}
+
 router.use(express.json()); // allows express to parse json objects (middleware)
 
 app.use("/", express.static("static")); // folder where client-side code is stored
+
+app.use(cors(corsOptions)); // middleware to allow CORS
 
 app.use((req, res, next) => { // middleware function to do console logs
     console.log(`${req.method} request for ${req.url}`); // print to console
     next(); // continue processeing
 });
 
-// establish a connection to the database
-router.get("/connect", (req, res) => {
-
-    con.connect((err) => {
-        if (err)
-        {
-            res.status(400).send('Error connecting: ' + err.stack);
-            est = false; // connection not established
-        }
-        else 
-        {
-            res.send('Connected as id ' + con.threadId);
-            est = true; // connection established
-        }        
-    });
-})
+con.connect((err) => {
+    if (err)
+    {
+        console.log('Error connecting: ' + err.stack);
+        est = false; // connection not established
+    }
+    else 
+    {
+        console.log('Connected as id ' + con.threadId);
+        est = true; // connection established
+    }        
+});
 
 // get all movies GET
 router.get("/movies", (req, res) => {
@@ -56,16 +60,16 @@ router.get("/movies", (req, res) => {
 });
 
 // register a new account POST
-router.post("/users/:email", (req, res) => {
+router.post("/users/:username", (req, res) => {
     
     if (est) // if connected to a database
     {
-        if (sanitizeEmail(req.params.email) && sanitizePass(req.body)) // sanitize input
+        if (sanitizeInput(req.params.username) && sanitizePass(req.body)) // sanitize input
         {
             con.query("SELECT * FROM MovieListUser", (error, rows, fields) => { // get all users
                 if (error) throw error;
                 
-                const index = rows.findIndex(u => u.emailAddress == req.params.email); // check for index of the specified user
+                const index = rows.findIndex(u => u.username == req.params.username); // check for index of the specified user
 
                 if (index >= 0) // user exists
                 {
@@ -73,7 +77,7 @@ router.post("/users/:email", (req, res) => {
                 }
                 else if (index < 0) // user does not exist
                 {
-                    con.query(`INSERT INTO MovieListUser (username, password, firstName, lastName, dateOfBirth, emailAddress, likeCount) VALUES ("${req.body.username}", "${req.body.password}", "${req.body.firstName}", "${req.body.lastName}", "${req.body.dateOfBirth}", "${req.params.email}", 0);`, (err, result) => { // insert new user account
+                    con.query(`INSERT INTO MovieListUser (username, password, firstName, lastName, dateOfBirth, emailAddress, likeCount) VALUES ("${req.params.username}", "${req.body.password}", "${req.body.firstName}", "${req.body.lastName}", "${req.body.dateOfBirth}", "${req.body.emailAddress}", 0);`, (err, result) => { // insert new user account
                         if (err) throw err;
 
                         res.send(`Created user`);
@@ -93,16 +97,16 @@ router.post("/users/:email", (req, res) => {
 })
 
 // log in to account GET
-router.get("/users/:email", (req, res) => {
+router.get("/users/:username", (req, res) => {
     
     if (est) // if connected to a database
     {
-        if (sanitizeEmail(req.params.email) && sanitizePass(req.body)) // sanitize input
+        if (sanitizeInput(req.params.username) && sanitizePass(req.body)) // sanitize input
         {
             con.query("SELECT * FROM MovieListUser", (error, rows, fields) => { // get all users
                 if (error) throw error;
                 
-                const index = rows.findIndex(u => u.emailAddress == req.params.email); // check for index of the specified user
+                const index = rows.findIndex(u => u.username == req.params.username); // check for index of the specified user
 
                 if (index >= 0) // user exists
                 {
@@ -128,31 +132,39 @@ router.get("/users/:email", (req, res) => {
     }
 })
 
-// change account attributes (username + password) PUT
-router.put("/users/:email", (req, res) => {
+// change account password PUT
+router.put("/users/:username", (req, res) => {
 
     if (est) // if connected to a database
     {
-        if (sanitizeEmail(req.params.email) && sanitizePass(req.body)) // sanitize input
+        if (sanitizeInput(req.params.username) && sanitizePass(req.body)) // sanitize input
         {
             con.query("SELECT * FROM MovieListUser", (error, rows, fields) => { // get all users
                 if (error) throw error;
                 
-                const index = rows.findIndex(u => u.emailAddress == req.params.email); // check for index of the specified user
+                const index = rows.findIndex(u => u.username == req.params.username); // check for index of the specified user
 
                 if (index >= 0) // user exists
                 {
-                    if (req.body.old_password == rows[index].password) // user entered their password correctly and it isnt the same
+                    if (req.body.old_password == rows[index].password && req.body.old_password != req.body.password) // user entered their password correctly
                     {
-                        con.query(`UPDATE MovieListUser SET username = "${req.body.username}", password = "${req.body.password}" WHERE emailAddress = "${req.params.email}"`, (err, result) => { // insert new user account
+                        con.query(`UPDATE MovieListUser SET password = "${req.body.password}" WHERE username = "${req.params.username}"`, (err, result) => { // insert new user account
                             if (err) throw err;
     
                             res.send(`Updated user`);
                         }) 
                     }
-                    else
+                    else if (req.body.old_password != req.body.password)
                     {
                         res.status(400).send("Incorrect password!");
+                    }
+                    else if (req.body.old_password == rows[index].password)
+                    {
+                        res.status(400).send("New password cannot match existing password!");
+                    }
+                    else
+                    {
+                        res.status(400).send("Incorrect password, and new password cannot match existing password!");
                     }
                 }
                 else if (index < 0) // user does not exist
@@ -172,6 +184,9 @@ router.put("/users/:email", (req, res) => {
     }
 })
 
+// get all watchListEntries of a single user
+router.get("")
+
 // create a review entry
 
 // get all movies directed by a specific director
@@ -179,8 +194,6 @@ router.put("/users/:email", (req, res) => {
 // see average rating of all movies released in a particular year
 
 // send and respond to a friend request
-
-// 
 
 // terminate a connection to the database
 router.get("/disconnect", (req, res) => {
