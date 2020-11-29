@@ -1,5 +1,4 @@
-USE se3309; 
-
+flush privileges;
 
 
 
