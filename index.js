@@ -30,7 +30,7 @@ app.use((req, res, next) => { // middleware function to do console logs
     next(); // continue processeing
 });
 
-con.connect((err) => {
+con.connect((err) => { // establish a database connection
     if (err)
     {
         console.log('Error connecting: ' + err.stack);
@@ -42,6 +42,20 @@ con.connect((err) => {
         est = true; // connection established
     }        
 });
+
+process.on("exit", () => { // right before closing, sever database connection
+    con.end((err) => {
+        if (err)
+        {
+            res.status(400).send("Error disconnecting!");
+        }
+        else
+        {
+            est = false;
+            res.send("Disconnected from database");
+        }
+    });
+})
 
 // get all movies GET
 router.get("/movies", (req, res) => {
@@ -251,26 +265,20 @@ router.post("/reviews/:username", (req, res) => {
     }
 })
 
-// get all movies directed by a specific director
+// get review counts per movie
+router.get("/reviews/count", (req, res) => {
 
-// see average rating of all movies released in a particular year
-
-// send and respond to a friend request
-
-// terminate a connection to the database
-router.get("/disconnect", (req, res) => {
-    con.end((err) => {
-        if (err)
-        {
-            res.status(400).send("Error disconnecting!");
-        }
-        else
-        {
-            est = false;
-            res.send("Disconnected from database");
-        }
-    });
-    
+    if (est) // if connected to a database
+    {
+        con.query("SELECT title AS movie, COUNT(title) AS reviewCount FROM Review GROUP BY title ORDER BY COUNT(title) DESC", (error, rows, fields) => {
+            if (error) throw error;
+            res.send(rows);
+        });
+    }
+    else
+    {
+        res.status(404).send("No database connection established!");
+    }
 })
 
 app.use("/api", router); // install router object path
