@@ -96,8 +96,8 @@ router.post("/users/:username", (req, res) => {
     }
 })
 
-// log in to account GET
-router.get("/users/:username", (req, res) => {
+// log in to account PUT
+router.put("/users/:username", (req, res) => {
     
     if (est) // if connected to a database
     {
@@ -133,7 +133,7 @@ router.get("/users/:username", (req, res) => {
 })
 
 // change account password PUT
-router.put("/users/:username", (req, res) => {
+router.put("/users/pass/:username", (req, res) => {
 
     if (est) // if connected to a database
     {
@@ -184,10 +184,72 @@ router.put("/users/:username", (req, res) => {
     }
 })
 
-// get all watchListEntries of a single user
-router.get("")
+// get all watchListEntries for a user
+router.get("/wle/:username", (req, res) => {
 
-// create a review entry
+    if (est) // if connected to a database
+    {
+        if (sanitizeInput(req.params.username))
+        {
+            con.query(`SELECT * FROM WatchListEntry WHERE username = "${req.params.username}"`, (error, rows, fields) => {
+                if (error) throw error;
+
+                res.send(rows); // send table to front end
+            });
+        }
+        else
+        {
+            res.status(400).send("Invalid input!");
+        }
+    }
+    else
+    {
+        res.status(404).send("No database connection established!");
+    }
+})
+
+// submit a review 
+router.post("/reviews/:username", (req, res) => {
+
+    if (est) // if connected to a database
+    {
+        if (sanitizeInput(req.params.username) && sanitizePass(req.body))
+        {
+            con.query("SELECT * FROM WatchListEntry", (error, rows, fields) => { // get all watch list entries
+                if (error) throw error;
+                
+                const index = rows.findIndex(u => u.username == req.params.username && u.title == req.body.title && u.director == req.body.director); // check for index of the specified user
+               
+                if (index >= 0) // movie is on their watchlist
+                {
+                    con.query(`SELECT * FROM Review`, (err, result) => { // insert new user account
+                        if (err) throw err;
+
+                        let revNum = result.length + 1; // set number of review
+                        
+                        con.query(`INSERT INTO Review VALUES ("${revNum}", "${req.body.numericalRating}", "${req.body.dateCreated}", "${req.params.username}", "${req.body.title}", "${req.body.releaseDate}", "${req.body.director}")`, (er, back) => {
+                            if (er) throw er;
+
+                            res.send("Created review");
+                        })
+                    })
+                }
+                else if (index < 0) // moive is not on their watchlist
+                {   
+                    res.status(400).send("Movie is not in user's WatchList!");
+                } 
+            });
+        }
+        else
+        {
+            res.status(400).send("Invalid input!");
+        }
+    }
+    else
+    {
+        res.status(404).send("No database connection established!");
+    }
+})
 
 // get all movies directed by a specific director
 
