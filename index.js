@@ -6,7 +6,7 @@ const con = mysql.createConnection({
     host: "localhost",
     user: "root",
     password: "password",
-    database: "se3309"
+    database: "se3309"    
 });
 
 var est = false; // track if server is connected to the database
@@ -97,7 +97,7 @@ router.post("/users/:username", (req, res) => {
 })
 
 // log in to account GET
-router.get("/users/:username", (req, res) => {
+router.put("/users/:username", (req, res) => {
     
     if (est) // if connected to a database
     {
@@ -133,7 +133,7 @@ router.get("/users/:username", (req, res) => {
 })
 
 // change account password PUT
-router.put("/users/:username", (req, res) => {
+router.put("/users/pass/:username", (req, res) => {
 
     if (est) // if connected to a database
     {
