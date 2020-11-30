@@ -6,7 +6,7 @@ const con = mysql.createConnection({
     host: "localhost",
     user: "root",
     password: "password",
-    database: "se3309"
+    database: "se3309"    
 });
 
 var est = false; // track if server is connected to the database

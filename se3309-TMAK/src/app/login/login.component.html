@@ -1,1 +1,30 @@
-<p>login works!</p>
+<div *ngIf="notLogged">
+  <h2>Login</h2>
+  <input id="username-log" type="text" placeHolder="Username" [(ngModel)]="userLog">
+  <input id="password-log" type="text" placeHolder="Password" [(ngModel)]="passLog">
+
+  <div id="btn">
+    <button (click)="login()" id="login-btn">Login</button>
+  </div>
+
+  <div id="login-create">
+    <h2>Create account</h2>
+    <input id="username" type="text" placeHolder="Username" [(ngModel)]="user">
+    <input id="password" type="text" placeHolder="Password" [(ngModel)]="pass">
+    <input id="email" type="text" placeHolder="Email" [(ngModel)]="email">
+    <input id="first-name" type="text" placeHolder="First name" [(ngModel)]="first">
+    <input id="last-name" type="text" placeHolder="Last name" [(ngModel)]="last">
+    <input id="dob" type="text" placeHolder="Date of birth" [(ngModel)]="dob">
+  </div>
+
+  <div id="btn">
+    <button (click)="createUser()" id="create-btn">Create account</button>
+  </div>
+</div>
+
+<div *ngIf="logged">
+  <p *ngFor="let c of arrUser">
+    <span>Logged in with: {{c.email}}</span>
+  </p>
+  <button (click)="logout()" id="logout-btn">Logout</button>
+</div>
