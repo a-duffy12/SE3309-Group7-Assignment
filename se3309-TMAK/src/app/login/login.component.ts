@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { User } from '../value.service';
 
 @Component({
   selector: 'app-login',
@@ -22,7 +23,7 @@ export class LoginComponent implements OnInit {
   notLogged: any = true;
   curUser: any;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private curUserName: User) { }
 
   ngOnInit(): void {
   }
@@ -31,8 +32,8 @@ export class LoginComponent implements OnInit {
     this.logged = false;
     this.http.put<any>(`http://localhost:3000/api/users/${this.userLog}`,{password: this.passLog}).subscribe((d: any) =>{ // Get request using users input
       this.curUser = d;
-      //this.user.setUser(this.emailLog);
-      //console.log(this.user.getUser());
+      this.curUserName.setUser(this.userLog);
+      console.log(this.curUserName.getUser());
       this.logged = true;
       this.notLogged = false;
       })
@@ -43,8 +44,6 @@ export class LoginComponent implements OnInit {
     this.http.post<any>(`http://localhost:3000/api/users/${this.user}`,
     {password: this.pass, firstName: this.first, lastName: this.last, emailAddress: this.email, dateOfBirth: this.dob}).subscribe((d: any) =>{ // Get request using users input
       this.curUser = d;
-      //this.user.setUser(this.emailLog);
-      //console.log(this.user.getUser());
       this.notLogged = true;
       })
   }
@@ -52,6 +51,7 @@ export class LoginComponent implements OnInit {
   logout(){
     this.notLogged = true;
     this.logged = false;
+    this.curUserName.setUser("");
   }
 
 }
