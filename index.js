@@ -139,6 +139,10 @@ router.put("/users/:username", (req, res) => {
                 } 
             });
         }
+        else 
+        {
+            res.status(400).send("Invalid input!");
+        }
     }
     else 
     {
@@ -198,7 +202,7 @@ router.put("/users/pass/:username", (req, res) => {
     }
 })
 
-// get all watchListEntries for a user
+// get all watchListEntries for a user GET
 router.get("/wle/:username", (req, res) => {
 
     if (est) // if connected to a database
@@ -222,7 +226,7 @@ router.get("/wle/:username", (req, res) => {
     }
 })
 
-// submit a review 
+// submit a review POST
 router.post("/reviews/:username", (req, res) => {
 
     if (est) // if connected to a database
@@ -265,7 +269,7 @@ router.post("/reviews/:username", (req, res) => {
     }
 })
 
-// get review counts per movie
+// get review counts per movie GET
 router.get("/reviews/count", (req, res) => {
 
     if (est) // if connected to a database
@@ -276,6 +280,110 @@ router.get("/reviews/count", (req, res) => {
         });
     }
     else
+    {
+        res.status(404).send("No database connection established!");
+    }
+})
+
+// get recommended movies (movies on friend's watch list they have seen) GET
+router.get("/recommended/:username", (req, res) => {
+
+    if (est) // if connected to a database
+    {
+        if (sanitizeInput(req.params.username))
+        {
+            con.query(`SELECT DISTINCT * FROM Movie m
+                WHERE EXISTS
+                    (SELECT * FROM WatchListEntry w
+                    WHERE m.title = w.title AND m.director = w.director AND m.releaseDate = w.releaseDate AND hasSeen = 1 AND EXISTS
+                        (SELECT * FROM Friendship f
+                        WHERE f.initiator = "${req.params.username}" AND f.friend = w.username))`, (error, rows, fields) => {
+                if (error) throw error;
+                res.send(rows);
+            });
+        }
+        else
+        {
+            res.status(400).send("Invalid input!");
+        }
+    }
+    else
+    {
+        res.status(404).send("No database connection established!");
+    }
+})
+
+// get the average overall rating, average review rating, and number of reviews for a given movie GET
+router.get("/rating/:title/:director", (req, res) => {
+
+    if (est) // if connected to a database
+    {
+        if (sanitizeInput(req.params.title) && sanitizeInput(req.params.director))
+        {
+            con.query(`SELECT m.title, m.director, overallRating AS avgOverallRating, AVG(numericalRating) AS avgReviewRating, COUNT(numericalRating) AS reviewCount
+                FROM Movie m, Review r
+                WHERE m.title = "${req.params.title}" AND r.title = "${req.params.title}" AND m.director = "${req.params.director}" AND r.director = "${req.params.director}"
+                GROUP BY r.title`, (error, rows, fields) => {
+                if (error) throw error;
+                res.send(rows);
+            })
+        }
+        else
+        {
+            res.status(400).send("Invalid input!");
+        }
+    }
+    else 
+    {
+        res.status(404).send("No database connection established!");
+    }
+})
+
+// get all movies from a franchise
+router.get("/movies/franchise/all/:franchise", (req, res) => {
+
+    if (est) // if connected to a database
+    {
+        if (sanitizeInput(req.params.title) && sanitizeInput(req.params.director))
+        {
+            con.query(`SELECT title, director, releaseDate, overallRating FROM Movie
+                WHERE franchise = "${req.params.franchise}"`, (error, rows, fields) => {
+                if (error) throw error;
+                res.send(rows);
+            })
+        }
+        else
+        {
+            res.status(400).send("Invalid input!");
+        }
+    }
+    else 
+    {
+        res.status(404).send("No database connection established!");
+    }
+})
+
+// get the best movie from a franchise
+router.get("/movies/franchise/best/:franchise", (req, res) => {
+
+    if (est) // if connected to a database
+    {
+        if (sanitizeInput(req.params.title) && sanitizeInput(req.params.director))
+        {
+            con.query(`SELECT title, director, releaseDate, overallRating FROM Movie
+                WHERE franchise = "${req.params.franchise}" AND overallRating = 
+                    (SELECT MAX(overallRating) FROM Movie
+                    WHERE franchise = "${req.params.franchise}")`, (error, rows, fields) => {
+                if (error) throw error;
+                res.send(rows);
+            })
+        }
+        else
+        {
+            res.status(400).send("Invalid input!");
+        }
+    }
+    else 
     {
         res.status(404).send("No database connection established!");
     }
