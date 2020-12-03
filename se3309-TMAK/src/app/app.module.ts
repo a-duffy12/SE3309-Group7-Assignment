@@ -7,13 +7,15 @@ import { RatingComponent } from './rating/rating.component';
 import { FormsModule } from '@angular/forms';
 import { User } from './value.service';
 import { OverallRatingComponent } from './overall-rating/overall-rating.component';
+import { FranchiseComponent } from './franchise/franchise.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     RatingComponent,
-    OverallRatingComponent
+    OverallRatingComponent,
+    FranchiseComponent
   ],
   imports: [
     BrowserModule,
