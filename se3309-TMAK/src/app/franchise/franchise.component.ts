@@ -23,7 +23,7 @@ export class FranchiseComponent implements OnInit {
     if (this.frnAll != "")
     {
       // request to back end
-      this.http.get(`http://localhost:3000/api/movies/franchise/all/${this.frnAll}`).subscribe((d: any) => {
+      this.http.get(`/api/movies/franchise/all/${this.frnAll}`).subscribe((d: any) => {
         this.entries = d;
       })
     }
@@ -38,7 +38,7 @@ export class FranchiseComponent implements OnInit {
     if (this.frnBest != "")
     {
       // request to back end
-      this.http.get(`http://localhost:3000/api/movies/franchise/best/${this.frnBest}`).subscribe((d: any) => {
+      this.http.get(`/api/movies/franchise/best/${this.frnBest}`).subscribe((d: any) => {
         this.best = d;
       })
     }

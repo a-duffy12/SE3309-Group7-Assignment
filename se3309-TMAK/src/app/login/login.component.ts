@@ -32,7 +32,7 @@ export class LoginComponent implements OnInit {
 
   login(){
     this.logged = false;
-    this.http.put<any>(`http://localhost:3000/api/users/${this.userLog}`,{password: this.passLog}).subscribe((d: any) =>{ // Get request using users input
+    this.http.put<any>(`/api/users/${this.userLog}`,{password: this.passLog}).subscribe((d: any) =>{ // Get request using users input
       this.curUser = d;
       this.curUserName.setUser(this.userLog);
       this.logged = true;
@@ -42,7 +42,7 @@ export class LoginComponent implements OnInit {
 
   createUser(){
     this.logged = false;
-    this.http.post<any>(`http://localhost:3000/api/users/${this.user}`,
+    this.http.post<any>(`/api/users/${this.user}`,
     {password: this.pass, firstName: this.first, lastName: this.last, emailAddress: this.email, dateOfBirth: this.dob}).subscribe((d: any) =>{ // Get request using users input
       this.curUser = d;
       this.notLogged = true;
@@ -56,7 +56,7 @@ export class LoginComponent implements OnInit {
   }
 
   changeP(){
-    this.http.put<any>(`http://localhost:3000/api/users/pass/${this.curUserName.getUser()}`,{old_password: this.oldPass, password: this.newPass}).subscribe((d: any) =>{
+    this.http.put<any>(`/api/users/pass/${this.curUserName.getUser()}`,{old_password: this.oldPass, password: this.newPass}).subscribe((d: any) =>{
 
       })
   }

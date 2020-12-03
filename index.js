@@ -3,7 +3,7 @@ const mysql = require("mysql"); // get mysql module
 const cors = require("cors"); // get cors module
 
 const con = mysql.createConnection({
-    host: "localhost",
+    host: "34.72.9.209",
     user: "root",
     password: "password",
     database: "se3309"    

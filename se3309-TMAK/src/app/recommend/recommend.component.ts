@@ -18,7 +18,7 @@ export class RecommendComponent implements OnInit {
 
 getRecommended()
 {
-  this.http.get(`http://localhost:3000/api/recommended/${this.curUserName.getUser()}`).subscribe((data:any)=>{
+  this.http.get(`/api/recommended/${this.curUserName.getUser()}`).subscribe((data:any)=>{
     this.allRecommended = data;
   })
 }

@@ -19,7 +19,7 @@ export class OverallRatingComponent implements OnInit {
   }
 
   comRatings(){
-    this.http.get<any>(`http://localhost:3000/api/rating/${this.movieTitle}/${this.director}`).subscribe((r: any) =>{ // Get request using users input
+    this.http.get<any>(`/api/rating/${this.movieTitle}/${this.director}`).subscribe((r: any) =>{ // Get request using users input
       this.ratings = r;
       })
   }
