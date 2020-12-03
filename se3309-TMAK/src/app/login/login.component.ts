@@ -57,7 +57,6 @@ export class LoginComponent implements OnInit {
   }
 
   changeP(){
-    this.logged = false;
     this.http.put<any>(`http://localhost:3000/api/users/pass/${this.curUserName.getUser()}`,{old_password: this.oldPass, password: this.newPass}).subscribe((d: any) =>{
 
       })
