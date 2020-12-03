@@ -2,9 +2,9 @@
 
 <div *ngIf="allRecommended">
     Reccomended Movie list:
-    <ul> 
+    <ul>
         <li *ngFor="let allReco of allRecommended">
-            <span> {{allReco}} </span>
+            <span> {{allReco.title}} by {{allReco.director}} was released on {{allReco.releaseDate}}. {{allReco.overallRating}}/10 </span>
         </li>
     </ul>
 </div>

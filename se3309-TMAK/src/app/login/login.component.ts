@@ -35,7 +35,6 @@ export class LoginComponent implements OnInit {
     this.http.put<any>(`http://localhost:3000/api/users/${this.userLog}`,{password: this.passLog}).subscribe((d: any) =>{ // Get request using users input
       this.curUser = d;
       this.curUserName.setUser(this.userLog);
-      console.log(this.curUserName.getUser());
       this.logged = true;
       this.notLogged = false;
       })

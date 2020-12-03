@@ -25,7 +25,6 @@ export class FranchiseComponent implements OnInit {
       // request to back end
       this.http.get(`http://localhost:3000/api/movies/franchise/all/${this.frnAll}`).subscribe((d: any) => {
         this.entries = d;
-        console.log(this.entries);
       })
     }
     else
