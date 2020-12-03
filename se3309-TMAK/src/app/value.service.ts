@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
+  import { Injectable } from '@angular/core';
 
 @Injectable()
 export class User {
 
-  curUser: String;
+  private curUser: String;
 
   constructor(){
     this.curUser = "";
