@@ -22,6 +22,8 @@ export class LoginComponent implements OnInit {
   logged: any;
   notLogged: any = true;
   curUser: any;
+  newPass: any;
+  oldPass: any;
 
   constructor(private http: HttpClient, public curUserName: User) { }
 
@@ -52,6 +54,13 @@ export class LoginComponent implements OnInit {
     this.notLogged = true;
     this.logged = false;
     this.curUserName.setUser("");
+  }
+
+  changeP(){
+    this.logged = false;
+    this.http.put<any>(`http://localhost:3000/api/users/pass/${this.curUserName.getUser()}`,{old_password: this.oldPass, password: this.newPass}).subscribe((d: any) =>{
+
+      })
   }
 
 }

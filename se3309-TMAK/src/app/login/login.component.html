@@ -27,4 +27,7 @@
     <span>Logged in with: {{c.email}}</span>
   </p>
   <button (click)="logout()" id="logout-btn">Logout</button>
+  <input id="old-pass" type="text" placeHolder="Current Password" [(ngModel)]="oldPass">
+  <input id="new-pass" type="text" placeHolder="New Password" [(ngModel)]="newPass">
+  <button (click)="changeP()" id="pass-btn">Change Password</button>
 </div>
