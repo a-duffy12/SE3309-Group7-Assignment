@@ -18,6 +18,7 @@ import { FranchiseComponent } from './franchise/franchise.component';
     RatingComponent,
     RecommendComponent,
     OverallRatingComponent,
+    FranchiseComponent
   ],
   imports: [
     BrowserModule,
