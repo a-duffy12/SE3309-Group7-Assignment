@@ -6,12 +6,14 @@ import { LoginComponent } from './login/login.component';
 import { RatingComponent } from './rating/rating.component';
 import { FormsModule } from '@angular/forms';
 import { User } from './value.service';
+import { FranchiseComponent } from './franchise/franchise.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    RatingComponent
+    RatingComponent,
+    FranchiseComponent
   ],
   imports: [
     BrowserModule,
