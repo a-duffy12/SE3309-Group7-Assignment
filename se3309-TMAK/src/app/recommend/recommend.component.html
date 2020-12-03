@@ -1,0 +1,8 @@
+<button (click)="getRecommended()" id="reccomend">Get recommended list!</button>
+
+<div *ngIf="allRecommended">
+        Reccomended Movie list:
+        <div *ngFor="let allReco of allRecommended">
+            {{allReco}}
+        </div>
+</div>
