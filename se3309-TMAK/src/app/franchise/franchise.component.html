@@ -1,0 +1,30 @@
+<div id="franchise-all-input">
+  <h2>View all Movies in a Franchise</h2>
+  <input type="text" placeholder="Franchise" [(ngModel)]="frnAll">
+  <button (click)="franchiseMovies()">View Movies</button>
+</div>
+
+<div *ngIf="entries && entries.length > 0" id="franchise-all-output">
+  <p>Displaying all movies in the {{frnAll}} franchise</p>
+  <ul>
+    <li *ngFor="let e of entries">
+      <span>{{e.title}} from {{e.director}} was released on {{e.releaseDate}}. {{e.overallRating}}/10</span>
+    </li>
+  </ul>
+</div>
+
+<div id="franchise-best-input">
+  <h2>View the Best Movie in a Franchise</h2>
+  <input type="text" placeholder="Franchise" [(ngModel)]="frnBest">
+  <button (click)="bestMovie()">View Best</button>
+</div>
+
+<div *ngIf="best && best.length > 0" id="franchise-best-output">
+  <p>The best move in the {{frnBest}} franchise is: {{best[0].title}}</p>
+  <ul>
+    <li>
+      <span>{{best[0].title}} from {{best[0].director}} was released on {{best[0].releaseDate}}. {{best[0].overallRating}}/10</span>
+    </li>
+  </ul>
+</div>
+

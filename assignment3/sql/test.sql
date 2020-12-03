@@ -7,12 +7,7 @@ VALUES ("The Dark Knight", "2008-07-18", "Christopher Nolan", "4shirley", "2020-
 INSERT INTO WatchListEntry
 VALUES ("The Dark Knight Rises", "2012-07-20", "Christopher Nolan", "4shirley", "2020-11-29", null, 0); */
 
-SELECT title, director, releaseDate, overallRating FROM Movie
-                WHERE franchise = "Dark Knight Trilogy" AND overallRating =  
-                    
-
-(SELECT MAX(overallRating)
-FROM Movie WHERE franchise = "Dark Knight Trilogy");
+SELECT * FROM MovieListUser;
 
 
 
