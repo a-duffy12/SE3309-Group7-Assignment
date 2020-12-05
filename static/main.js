@@ -587,26 +587,24 @@ class RatingComponent {
     ngOnInit() {
     }
     getWatchList() {
-        this.watchList = [];
-        this.http.get(`/api/wle/${this.user.getUser()}`).subscribe((data) => {
-            let object = {
-                title: data.movie,
-                director: data.director,
-                releaseDate: data.releaseDate,
-            };
-            this.watchList.push(object);
-        });
+        if (this.user.getUser() != "") {
+            this.watchList = [];
+            this.http.get(`/api/wle/${this.user.getUser()}`).subscribe((data) => {
+                this.watchList = data;
+            });
+        }
     }
     submitRating() {
-        let rating = {
+        let rev = {
             title: this.selectedMovie.title,
             director: this.selectedMovie.director,
             releaseDate: this.selectedMovie.releaseDate,
             numericalRating: this.rating,
             dateCreated: this.datePipe.transform(this.dateCreated, 'yyyy-MM-dd')
         };
+        console.log(rev);
         if (this.findErrors()) {
-            this.http.post(`/api/reviews/${this.user.getUser()}`, rating).subscribe((data) => {
+            this.http.post(`/api/reviews/${this.user.getUser()}`, JSON.stringify(rev)).subscribe((data) => {
                 console.log('successfully added rating');
             });
         }
@@ -630,7 +628,7 @@ RatingComponent.ɵfac = function RatingComponent_Factory(t) { return new (t || R
 RatingComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: RatingComponent, selectors: [["app-rating"]], inputs: { rating: "rating" }, features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([_angular_common__WEBPACK_IMPORTED_MODULE_1__["DatePipe"]])], decls: 3, vars: 1, consts: [["type", "button", 3, "click"], ["class", "overlay", 4, "ngIf"], [1, "overlay"], [1, "popup"], [1, "close", 3, "click"], [1, "content"], [1, "item"], [3, "ngModel", "ngModelChange"], [3, "ngValue", 4, "ngFor", "ngForOf"], ["type", "number", 3, "ngModel", "ngModelChange"], [3, "click"], [4, "ngIf"], [3, "ngValue"]], template: function RatingComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "button", 0);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function RatingComponent_Template_button_click_0_listener() { ctx.getWatchList(); return ctx.popup = true; });
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, " Rate Movie ");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, " Rate Movie\n");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](2, RatingComponent_div_2_Template, 19, 4, "div", 1);
     } if (rf & 2) {

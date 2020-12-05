@@ -246,7 +246,7 @@ router.post("/reviews/:username", (req, res) => {
                
                 if (index >= 0) // movie is on their watchlist
                 {
-                    con.query(`SELECT * FROM Review`, (err, result) => { // insert new user account
+                    con.query(`SELECT * FROM review`, (err, result) => { // insert new user account
                         if (err) throw err;
 
                         let revNum = result.length + 1; // set number of review

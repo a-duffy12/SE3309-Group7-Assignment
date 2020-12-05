@@ -47,7 +47,7 @@ export class RatingComponent implements OnInit {
   }
 
   submitRating(){
-    let rating: rating = {
+    let rev: rating = {
       title: this.selectedMovie.title,
       director: this.selectedMovie.director,
       releaseDate: this.selectedMovie.releaseDate,
@@ -55,8 +55,10 @@ export class RatingComponent implements OnInit {
       dateCreated: this.datePipe.transform(this.dateCreated, 'yyyy-MM-dd')
     }
 
+    console.log(rev);
+
     if(this.findErrors()){
-      this.http.post<any>(`/api/reviews/${this.user.getUser()}`, rating).subscribe( (data: any) => {
+      this.http.post<any>(`/api/reviews/${this.user.getUser()}`, JSON.stringify(rev)).subscribe( (data: any) => {
         console.log('successfully added rating')
       })
     }
