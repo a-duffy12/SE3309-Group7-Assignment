@@ -24,7 +24,7 @@ interface rating{
 })
 
 export class RatingComponent implements OnInit {
-  watchList: Array<movie>;
+  watchList: Array<any>;
   popup: boolean = false;
   errorMessage: string = "Please make sure all fields are entered, and rating is between 1-10"
 
