@@ -1,10 +1,14 @@
-<button (click)="getRecommended()" id="reccomend">Get Recommended</button>
+<div>
+  <h2>Your Recommended Movies</h2>
+  <button (click)="getRecommended()" id="reccomend">Get Recommended</button>
+</div>
 
 <div *ngIf="allRecommended">
-    <h2>Displaying recommended movies</h2>
-    <ul>
-        <li *ngFor="let allReco of allRecommended">
-            <span> {{allReco.title}} by {{allReco.director}} was released on {{allReco.releaseDate}}. {{allReco.overallRating}}/10 </span>
-        </li>
-    </ul>
+  <h2>Displaying recommended movies</h2>
+  <ul>
+    <li *ngFor="let allReco of allRecommended">
+      <span> {{allReco.title}} by {{allReco.director}} was released on {{allReco.releaseDate}}.
+        {{allReco.overallRating}}/10 </span>
+    </li>
+  </ul>
 </div>

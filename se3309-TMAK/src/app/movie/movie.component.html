@@ -1,0 +1,28 @@
+<div id="all-movies">
+  <h2>View all Movies</h2>
+  <button (click)="movies()">View Movies</button>
+</div>
+
+<div *ngIf="mov">
+  <p>Displaying all movies</p>
+  <ul>
+    <li *ngFor="let m of mov">
+      <span>{{m.title}} by {{m.director}} was released on {{m.releaseDate}}. {{m.overallRating}}/10</span>
+    </li>
+  </ul>
+</div>
+
+<div id="review-movies">
+  <h2>View Review Counts for Movies</h2>
+  <button (click)="reviews()">View Best</button>
+</div>
+
+<div *ngIf="rev">
+  <ul>
+    <li *ngFor="let r of rev">
+      <span>{{r.movie}} has been reviewed {{r.reviewCount}} times</span>
+    </li>
+  </ul>
+</div>
+
+

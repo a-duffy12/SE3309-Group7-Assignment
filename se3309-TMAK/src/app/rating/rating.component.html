@@ -1,7 +1,7 @@
-<button type="button" (click)="getWatchList();popup = true">
-  Rate Movie
-</button>
-
+<div *ngIf="activeUser">
+  <h2>Submit a Review</h2>
+  <button type="button" (click)="getWatchList();popup = true">Rate Movie</button>
+</div>
 
 <div class="overlay" *ngIf="popup">
   <div class="popup">
@@ -12,7 +12,7 @@
         <span>
           Movie:
           <select [(ngModel)]='selectedMovie'>
-            <option *ngFor="let x of watchList" [ngValue]="x.title">{{x.title}} directed by {{x.director}} </option>
+            <option *ngFor="let x of watchList" [ngValue]="x">{{x.title}} directed by {{x.director}} </option>
           </select>
         </span>
       </div>

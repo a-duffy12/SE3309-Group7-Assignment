@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
 import { User } from '../value.service';
+import { interval, Subscription } from 'rxjs';
 
 interface movie{
   title: string,
@@ -31,7 +32,17 @@ export class RatingComponent implements OnInit {
   selectedMovie: movie;
   @Input() rating: number;
   dateCreated: Date = new Date();
-  constructor(private http: HttpClient, private datePipe: DatePipe, private user: User) { }
+
+  // fields to track whether a user is logged in or not
+  subscription: Subscription;
+  activeUser: String = "";
+
+  constructor(private http: HttpClient, private datePipe: DatePipe, private user: User) {
+    // every second, update the active user variable
+    this.subscription = interval(1000).subscribe(() => {
+      this.activeUser = this.user.getUser();
+    });
+  }
 
   ngOnInit(): void {
   }
@@ -47,23 +58,17 @@ export class RatingComponent implements OnInit {
   }
 
   submitRating(){
-    let rev: rating = {
-      title: this.selectedMovie.title,
-      director: this.selectedMovie.director,
-      releaseDate: this.selectedMovie.releaseDate,
-      numericalRating: this.rating,
-      dateCreated: this.datePipe.transform(this.dateCreated, 'yyyy-MM-dd')
-    }
-
-    console.log(rev);
-
     if(this.findErrors()){
-      this.http.post<any>(`/api/reviews/${this.user.getUser()}`, JSON.stringify(rev)).subscribe( (data: any) => {
+      this.http.post<any>(`/api/reviews/${this.user.getUser()}`,{title: this.selectedMovie.title,
+        director: this.selectedMovie.director,
+        releaseDate: this.datePipe.transform(this.selectedMovie.releaseDate, 'yyyy-MM-dd'),
+        numericalRating: this.rating,
+        dateCreated: this.datePipe.transform(this.dateCreated, 'yyyy-MM-dd')}, ).subscribe( (data: any) => {
         console.log('successfully added rating')
       })
     }
     else{
-
+      console.log("Invalid input!");
     }
   }
 

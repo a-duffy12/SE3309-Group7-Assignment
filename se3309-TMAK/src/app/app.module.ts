@@ -9,6 +9,7 @@ import { User } from './value.service';
 import { RecommendComponent } from './recommend/recommend.component';
 import { OverallRatingComponent } from './overall-rating/overall-rating.component';
 import { FranchiseComponent } from './franchise/franchise.component';
+import { MovieComponent } from './movie/movie.component';
 
 
 @NgModule({
@@ -18,7 +19,8 @@ import { FranchiseComponent } from './franchise/franchise.component';
     RatingComponent,
     RecommendComponent,
     OverallRatingComponent,
-    FranchiseComponent
+    FranchiseComponent,
+    MovieComponent
   ],
   imports: [
     BrowserModule,
