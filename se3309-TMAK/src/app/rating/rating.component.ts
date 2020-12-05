@@ -41,12 +41,7 @@ export class RatingComponent implements OnInit {
     {
       this.watchList = [];
       this.http.get<any>(`/api/wle/${this.user.getUser()}`).subscribe( (data: any) => {
-        let object = {
-          title: data.movie,
-          director: data.director,
-          releaseDate: data.releaseDate,
-        }
-        this.watchList.push(object);
+        this.watchList = data;
       });
     }
   }
