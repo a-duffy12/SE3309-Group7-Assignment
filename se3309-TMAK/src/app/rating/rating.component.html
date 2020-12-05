@@ -1,34 +1,34 @@
-<button type="button"(click)="getWatchList();popup = true">
+<button type="button" (click)="getWatchList();popup = true">
   Rate Movie
- </button>
+</button>
 
 
- <div class="overlay" *ngIf="popup">
-     <div class="popup">
-         <h2>Rate Movie</h2>
-         <a class="close" (click)="popup = false">&times;</a>
-         <div class="content">
-           <div class="item">
-             <span>
-               Movie:
-               <select [(ngModel)]='selectedMovie'>
-                 <option *ngFor="let x of watchList" [ngValue]="x.title">{{x.title}} directed by {{x.director}} </option>
-               </select>
-             </span>
-           </div>
+<div class="overlay" *ngIf="popup">
+  <div class="popup">
+    <h2>Rate Movie</h2>
+    <a class="close" (click)="popup = false">&times;</a>
+    <div class="content">
+      <div class="item">
+        <span>
+          Movie:
+          <select [(ngModel)]='selectedMovie'>
+            <option *ngFor="let x of watchList" [ngValue]="x.title">{{x.title}} directed by {{x.director}} </option>
+          </select>
+        </span>
+      </div>
 
-           <div class="item">
-            <span>
-              Rating (from 1-10):
-              <input type="number" [(ngModel)]="rating">
-            </span>
-           </div>
+      <div class="item">
+        <span>
+          Rating (from 1-10):
+          <input type="number" [(ngModel)]="rating">
+        </span>
+      </div>
 
-           <button (click)="submitRating();popup = false">Submit Rating</button>
+      <button (click)="submitRating();popup = false">Submit Rating</button>
 
-           <div *ngIf="!this.findErrors()">
-             {{this.errorMessage}}
-           </div>
-         </div>
-     </div>
- </div>
+      <div *ngIf="!this.findErrors()">
+        {{this.errorMessage}}
+      </div>
+    </div>
+  </div>
+</div>

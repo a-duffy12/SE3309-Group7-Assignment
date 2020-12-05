@@ -3,7 +3,7 @@ const mysql = require("mysql"); // get mysql module
 const cors = require("cors"); // get cors module
 
 const con = mysql.createConnection({
-    host: "34.72.9.209",
+    host: "34.71.89.24",
     user: "root",
     password: "password",
     database: "se3309"    
@@ -39,6 +39,12 @@ con.connect((err) => { // establish a database connection
     else 
     {
         console.log('Connected as id ' + con.threadId);
+        
+        // set session to allow non-full group by
+        con.query("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))", (error, rows, fields) => {
+            if (error) throw error;
+        });
+        
         est = true; // connection established
     }        
 });
@@ -62,7 +68,7 @@ router.get("/movies", (req, res) => {
     
     if (est)
     {
-        con.query("SELECT * FROM Movie", (error, rows, fields) => {
+        con.query("SELECT * FROM movie", (error, rows, fields) => {
             if (error) throw error;
             res.send(rows);
         });
@@ -80,7 +86,7 @@ router.post("/users/:username", (req, res) => {
     {
         if (sanitizeInput(req.params.username) && sanitizePass(req.body)) // sanitize input
         {
-            con.query("SELECT * FROM MovieListUser", (error, rows, fields) => { // get all users
+            con.query("SELECT * FROM movielistuser", (error, rows, fields) => { // get all users
                 if (error) throw error;
                 
                 const index = rows.findIndex(u => u.username == req.params.username); // check for index of the specified user
@@ -91,7 +97,7 @@ router.post("/users/:username", (req, res) => {
                 }
                 else if (index < 0) // user does not exist
                 {
-                    con.query(`INSERT INTO MovieListUser (username, password, firstName, lastName, dateOfBirth, emailAddress, likeCount) VALUES ("${req.params.username}", "${req.body.password}", "${req.body.firstName}", "${req.body.lastName}", "${req.body.dateOfBirth}", "${req.body.emailAddress}", 0);`, (err, result) => { // insert new user account
+                    con.query(`INSERT INTO movielistuser (username, password, firstName, lastName, dateOfBirth, emailAddress, likeCount) VALUES ("${req.params.username}", "${req.body.password}", "${req.body.firstName}", "${req.body.lastName}", "${req.body.dateOfBirth}", "${req.body.emailAddress}", 0);`, (err, result) => { // insert new user account
                         if (err) throw err;
 
                         res.send(`Created user`);
@@ -117,7 +123,7 @@ router.put("/users/:username", (req, res) => {
     {
         if (sanitizeInput(req.params.username) && sanitizePass(req.body)) // sanitize input
         {
-            con.query("SELECT * FROM MovieListUser", (error, rows, fields) => { // get all users
+            con.query("SELECT * FROM movielistuser", (error, rows, fields) => { // get all users
                 if (error) throw error;
                 
                 const index = rows.findIndex(u => u.username == req.params.username); // check for index of the specified user
@@ -157,7 +163,7 @@ router.put("/users/pass/:username", (req, res) => {
     {
         if (sanitizeInput(req.params.username) && sanitizePass(req.body)) // sanitize input
         {
-            con.query("SELECT * FROM MovieListUser", (error, rows, fields) => { // get all users
+            con.query("SELECT * FROM movielistuser", (error, rows, fields) => { // get all users
                 if (error) throw error;
                 
                 const index = rows.findIndex(u => u.username == req.params.username); // check for index of the specified user
@@ -166,7 +172,7 @@ router.put("/users/pass/:username", (req, res) => {
                 {
                     if (req.body.old_password == rows[index].password && req.body.old_password != req.body.password) // user entered their password correctly
                     {
-                        con.query(`UPDATE MovieListUser SET password = "${req.body.password}" WHERE username = "${req.params.username}"`, (err, result) => { // insert new user account
+                        con.query(`UPDATE movielistuser SET password = "${req.body.password}" WHERE username = "${req.params.username}"`, (err, result) => { // insert new user account
                             if (err) throw err;
     
                             res.send(`Updated user`);
@@ -209,7 +215,7 @@ router.get("/wle/:username", (req, res) => {
     {
         if (sanitizeInput(req.params.username))
         {
-            con.query(`SELECT * FROM WatchListEntry WHERE username = "${req.params.username}"`, (error, rows, fields) => {
+            con.query(`SELECT * FROM watchlistentry WHERE username = "${req.params.username}"`, (error, rows, fields) => {
                 if (error) throw error;
 
                 res.send(rows); // send table to front end
@@ -233,7 +239,7 @@ router.post("/reviews/:username", (req, res) => {
     {
         if (sanitizeInput(req.params.username) && sanitizePass(req.body))
         {
-            con.query("SELECT * FROM WatchListEntry", (error, rows, fields) => { // get all watch list entries
+            con.query("SELECT * FROM watchlistentry", (error, rows, fields) => { // get all watch list entries
                 if (error) throw error;
                 
                 const index = rows.findIndex(u => u.username == req.params.username && u.title == req.body.title && u.director == req.body.director); // check for index of the specified user
@@ -245,7 +251,7 @@ router.post("/reviews/:username", (req, res) => {
 
                         let revNum = result.length + 1; // set number of review
                         
-                        con.query(`INSERT INTO Review VALUES ("${revNum}", "${req.body.numericalRating}", "${req.body.dateCreated}", "${req.params.username}", "${req.body.title}", "${req.body.releaseDate}", "${req.body.director}")`, (er, back) => {
+                        con.query(`INSERT INTO review VALUES ("${revNum}", "${req.body.numericalRating}", "${req.body.dateCreated}", "${req.params.username}", "${req.body.title}", "${req.body.releaseDate}", "${req.body.director}")`, (er, back) => {
                             if (er) throw er;
 
                             res.send("Created review");
@@ -274,7 +280,7 @@ router.get("/reviews/count", (req, res) => {
 
     if (est) // if connected to a database
     {
-        con.query("SELECT title AS movie, COUNT(title) AS reviewCount FROM Review GROUP BY title ORDER BY COUNT(title) DESC", (error, rows, fields) => {
+        con.query("SELECT title AS movie, COUNT(title) AS reviewCount FROM review GROUP BY title ORDER BY COUNT(title) DESC", (error, rows, fields) => {
             if (error) throw error;
             res.send(rows);
         });
@@ -292,11 +298,11 @@ router.get("/recommended/:username", (req, res) => {
     {
         if (sanitizeInput(req.params.username))
         {
-            con.query(`SELECT DISTINCT * FROM Movie m
+            con.query(`SELECT DISTINCT * FROM movie m
                 WHERE EXISTS
-                    (SELECT * FROM WatchListEntry w
+                    (SELECT * FROM watchlistentry w
                     WHERE m.title = w.title AND m.director = w.director AND m.releaseDate = w.releaseDate AND hasSeen = 1 AND EXISTS
-                        (SELECT * FROM Friendship f
+                        (SELECT * FROM friendship f
                         WHERE f.initiator = "${req.params.username}" AND f.friend = w.username))`, (error, rows, fields) => {
                 if (error) throw error;
                 res.send(rows);
@@ -321,7 +327,7 @@ router.get("/rating/:title/:director", (req, res) => {
         if (sanitizeInput(req.params.title) && sanitizeInput(req.params.director))
         {
             con.query(`SELECT m.title, m.director, overallRating AS avgOverallRating, AVG(numericalRating) AS avgReviewRating, COUNT(numericalRating) AS reviewCount
-                FROM Movie m, Review r
+                FROM movie m, review r
                 WHERE m.title = "${req.params.title}" AND r.title = "${req.params.title}" AND m.director = "${req.params.director}" AND r.director = "${req.params.director}"
                 GROUP BY r.title`, (error, rows, fields) => {
                 if (error) throw error;
@@ -346,7 +352,7 @@ router.get("/movies/franchise/all/:franchise", (req, res) => {
     {
         if (sanitizeInput(req.params.title) && sanitizeInput(req.params.director))
         {
-            con.query(`SELECT title, director, releaseDate, overallRating FROM Movie
+            con.query(`SELECT title, director, releaseDate, overallRating FROM movie
                 WHERE franchise = "${req.params.franchise}"`, (error, rows, fields) => {
                 if (error) throw error;
                 res.send(rows);
@@ -370,9 +376,9 @@ router.get("/movies/franchise/best/:franchise", (req, res) => {
     {
         if (sanitizeInput(req.params.title) && sanitizeInput(req.params.director))
         {
-            con.query(`SELECT title, director, releaseDate, overallRating FROM Movie
+            con.query(`SELECT title, director, releaseDate, overallRating FROM movie
                 WHERE franchise = "${req.params.franchise}" AND overallRating = 
-                    (SELECT MAX(overallRating) FROM Movie
+                    (SELECT MAX(overallRating) FROM movie
                     WHERE franchise = "${req.params.franchise}")`, (error, rows, fields) => {
                 if (error) throw error;
                 res.send(rows);

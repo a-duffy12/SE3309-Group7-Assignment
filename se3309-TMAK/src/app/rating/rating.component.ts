@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
+import { User } from '../value.service';
 
 interface movie{
   title: string,
@@ -30,21 +31,24 @@ export class RatingComponent implements OnInit {
   selectedMovie: movie;
   @Input() rating: number;
   dateCreated: Date = new Date();
-  constructor(private http: HttpClient, private datePipe: DatePipe) { }
+  constructor(private http: HttpClient, private datePipe: DatePipe, private user: User) { }
 
   ngOnInit(): void {
   }
 
   getWatchList(){
-    this.watchList = [];
-    this.http.get<any>('route').subscribe( (data: any) => {
-      let object = {
-        title: data.movie,
-        director: data.director,
-        releaseDate: data.releaseDate,
-      }
-      this.watchList.push(object)
-    });
+    if (this.user.getUser() != "")
+    {
+      this.watchList = [];
+      this.http.get<any>(`/api/wle/${this.user.getUser()}`).subscribe( (data: any) => {
+        let object = {
+          title: data.movie,
+          director: data.director,
+          releaseDate: data.releaseDate,
+        }
+        this.watchList.push(object);
+      });
+    }
   }
 
   submitRating(){
@@ -57,7 +61,7 @@ export class RatingComponent implements OnInit {
     }
 
     if(this.findErrors()){
-      this.http.post<any>('route', rating).subscribe( (data: any) => {
+      this.http.post<any>(`/api/reviews/${this.user.getUser()}`, rating).subscribe( (data: any) => {
         console.log('successfully added rating')
       })
     }
